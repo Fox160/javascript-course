@@ -1,1 +1,3 @@
-# javascript-course
+# Медиасофт, JavaScript 2019г.
+
+Домашние задания по курсам.
