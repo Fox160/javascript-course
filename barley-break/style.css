@@ -19,6 +19,20 @@
     font-size: 6rem;
     color: black;
     text-align: center;
-    width: calc(100%/4 - 2px);
-    height: calc(100%/4 - 2px);
-  }
+    width: calc(100% / 4 - 2px);
+    height: calc(100% / 4 - 2px);
+}
+
+.emptyCard {
+    border: none;
+    background-color: transparent;
+    width: calc(100% / 4);
+    height: calc(100% / 4);
+}
+
+button {
+    width: 10%;
+    display: block;
+    padding: 15px 10px;
+    margin: 30px auto 0;
+}
