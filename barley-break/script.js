@@ -1,18 +1,33 @@
-var container = '';
-
+var container = createElement('div', '', 'container');
+let emptyDiv = '';
+var button = createElement('button', 'Начать игру')
+button.onclick = shuffle;
 createCards();
-shuffle();
 
-let emptyDiv = document.createElement('div');
-emptyDiv.classList.add('emptyCard');
-emptyDiv.setAttribute('row', 3);
-emptyDiv.setAttribute('column', 3);
-container.appendChild(emptyDiv);
+function createElement(tagName, innerText, className, parentNode) {
+    let elem = document.createElement(tagName);
+    elem.innerHTML = innerText;
+    if (className != undefined) {
+        elem.classList.add(className);
+    }
+    if (parentNode == undefined) {
+        document.body.appendChild(elem);
+    } else {
+        parentNode.appendChild(elem);
+    }
+    return elem;
+}
 
-var button = document.createElement("button");
-    button.innerHTML = "Начать игру";
-    // button.onclick = shuffle;
-    document.body.appendChild(button);
+function createCards() {
+    for (let i = 0; i < 15; i++) {
+        let innerDiv = createElement('div', i + 1 + '', 'card', container);
+        innerDiv.addEventListener('click', moveCard);
+        setNewAttribute(innerDiv, parseInt(i % 4, 10), parseInt(i / 4, 10));
+    }
+
+    emptyDiv = createElement('div', '', 'emptyCard', container);
+    setNewAttribute(emptyDiv, 3, 3);
+}
 
 function moveCard() {
     const columnAttr = this.getAttribute('column');
@@ -46,6 +61,8 @@ function moveCard() {
     }
     setNewAttribute(this, emptyDiv.getAttribute('column'), emptyDiv.getAttribute('row'));
     setNewAttribute(emptyDiv, columnAttr, rowAttr);
+
+    isGameOver();
 }
 
 function setNewAttribute(toNode, columnAttr, rowAttr) {
@@ -53,32 +70,28 @@ function setNewAttribute(toNode, columnAttr, rowAttr) {
     toNode.setAttribute('column', columnAttr);
 }
 
-function createCards() {
-    container = document.createElement('div');
-    container.classList.add('container');
-    document.body.appendChild(container);
-    for (let i = 0; i < 15; i++) {
-        let innerDiv = document.createElement('div');
-        innerDiv.classList.add('card');
-        innerDiv.innerHTML += i + 1 + '';
-        container.appendChild(innerDiv);
-        innerDiv.addEventListener('click', moveCard);
-    }
-}
-
-//В будущем использовать эту функцию при нажатии кнопки "Старт"
 function shuffle() {
-    var elementsArray = Array.prototype.slice.call(container.getElementsByClassName('card'));
+    var elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
     elementsArray.forEach(function(element) {
         container.removeChild(element);
     });
     shuffleArray(elementsArray);
 
     elementsArray.forEach(function(element, i) {
-        element.setAttribute('row', parseInt(i / 4, 10));
-        element.setAttribute('column', parseInt(i % 4, 10));
+        setNewAttribute(element, parseInt(i % 4, 10), parseInt(i / 4, 10));
+        element.addEventListener('click', moveCard);
         container.appendChild(element);
     });
+
+    //Перемешивать, пока не найдется выигрышный вариант
+    while (!isSolutionExists()) {
+        shuffleArray(elementsArray);
+        elementsArray.forEach(function(element, i) {
+            setNewAttribute(element, parseInt(i % 4, 10), parseInt(i / 4, 10));
+            container.appendChild(element);
+            element.addEventListener('click', moveCard);
+        });
+    }
 }
 
 function shuffleArray(array) {
@@ -87,4 +100,47 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+function disableField() {
+    var elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
+    elementsArray.forEach(function(element) {
+        element.removeEventListener('click', moveCard);
+    });
+}
+
+function isGameOver() {
+    var array = Array.prototype.slice.call(container.getElementsByTagName('div'));
+
+    for (let i = 0; i < 15; i++) {
+        if (array[i].innerHTML !== i + 1 + '') {
+            return false;
+        }
+    }
+
+    alert('Игра окончена!');
+    disableField();
+    return true;
+}
+
+function isSolutionExists() {
+    let numInversions = 0;
+    let array = container.getElementsByTagName('div');
+
+    for (let i = 0; i < 16; ++i) {
+        if (array[i].innerHTML !== '') {
+            for (let j = 0; j < i; ++j) {
+                if (+array[j].innerHTML > +array[i].innerHTML) {
+                    ++numInversions;
+                }
+            }
+        }
+    }
+    for (let i = 0; i < 16; ++i) {
+        if (array[i].innerHTML == '') {
+            numInversions += 1 + i / 4;
+        }
+    }
+
+    return numInversions % 2 == 0;
 }

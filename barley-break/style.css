@@ -32,7 +32,15 @@
 
 button {
     width: 10%;
+    font-size: 14px;
     display: block;
     padding: 15px 10px;
     margin: 30px auto 0;
+    background-color: cornflowerblue;
+    border: 1px solid transparent;
+    outline: none;
+}
+
+button:hover {
+    background-color: steelblue;
 }
