@@ -1,7 +1,9 @@
-var container = createElement('div', '', 'container');
+let counterField = createElement('p', 'Ходы: 0', 'counter');
+let container = createElement('div', '', 'container');
 let emptyDiv = '';
-var button = createElement('button', 'Начать игру')
-button.onclick = shuffle;
+let counter = undefined;
+let button = createElement('button', 'Начать игру');
+button.onclick = startGame;
 createCards();
 
 function createElement(tagName, innerText, className, parentNode) {
@@ -62,6 +64,7 @@ function moveCard() {
     setNewAttribute(this, emptyDiv.getAttribute('column'), emptyDiv.getAttribute('row'));
     setNewAttribute(emptyDiv, columnAttr, rowAttr);
 
+    counterField.innerHTML = 'Ходы: ' + parseInt(counter());
     isGameOver();
 }
 
@@ -70,8 +73,8 @@ function setNewAttribute(toNode, columnAttr, rowAttr) {
     toNode.setAttribute('column', columnAttr);
 }
 
-function shuffle() {
-    var elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
+function startGame() {
+    let elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
     elementsArray.forEach(function(element) {
         container.removeChild(element);
     });
@@ -92,6 +95,15 @@ function shuffle() {
             element.addEventListener('click', moveCard);
         });
     }
+    counterField.innerHTML = 'Ходы: 0';
+    counter = makeCounter();
+}
+
+function makeCounter() {
+    let currentCount = 1;
+    return function() {
+        return currentCount++;
+    };
 }
 
 function shuffleArray(array) {
@@ -103,21 +115,20 @@ function shuffleArray(array) {
 }
 
 function disableField() {
-    var elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
+    let elementsArray = Array.prototype.slice.call(container.getElementsByTagName('div'));
     elementsArray.forEach(function(element) {
         element.removeEventListener('click', moveCard);
     });
 }
 
 function isGameOver() {
-    var array = Array.prototype.slice.call(container.getElementsByTagName('div'));
+    let array = Array.prototype.slice.call(container.getElementsByTagName('div'));
 
     for (let i = 0; i < 15; i++) {
         if (array[i].innerHTML !== i + 1 + '') {
             return false;
         }
     }
-
     alert('Игра окончена!');
     disableField();
     return true;
